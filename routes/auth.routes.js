@@ -37,6 +37,8 @@ router.post(
           status: 200,
           email: email,
           password: `Ваш пароль для входа: ${pass}`,
+          first: candidate,
+          update: update,
         });
       }
 
