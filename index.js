@@ -11,6 +11,7 @@ app.use(cors());
 app.use("/api/auth", require("./routes/auth.routes"));
 
 async function start() {
+  console.log("Starting");
   try {
     await mongoose.connect(MONGODB_URL, {
       useNewUrlParser: true,
