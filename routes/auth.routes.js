@@ -30,15 +30,15 @@ router.post(
       }
 
       if (candidate && repeat) {
-        const update = { ...candidate._doc, hashedPassword: hashedPassword };
-        await User.findOneAndUpdate({ email: email }, update);
+        await User.findOneAndUpdate(
+          { email: email },
+          { ...candidate._doc, hashedPassword: hashedPassword }
+        );
         return res.status(200).json({
           message: "Email sent successfully",
           status: 200,
           email: email,
           password: `Ваш пароль для входа: ${pass}`,
-          first: candidate,
-          update: update,
         });
       }
 
