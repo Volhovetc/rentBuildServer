@@ -16,7 +16,7 @@ router.post(
     try {
       // const error = validationResult(req);
       // if (!error.isEmpty()) {
-      //   return res.status(401).json({ errors: error.array() });
+      //   return res.status(400).json({type: "error", value: error.array() });
       // }
 
       const pass = randomUUID();
@@ -26,7 +26,7 @@ router.post(
       const candidate = await User.findOne({ email });
       if (candidate && !repeat) {
         return res
-          .status(200)
+          .status(400)
           .json({ type: "error", value: "Такой email уже зарегистрирован" });
       }
 
