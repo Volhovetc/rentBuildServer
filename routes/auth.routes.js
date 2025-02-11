@@ -59,15 +59,13 @@ router.post(
         message: "Email sent successfully",
         status: 200,
         email: email,
+        password: `Ваш пароль для входа: ${pass}`,
       });
     } catch (e) {
       console.dir(e);
-      return res
-        .status(500)
-        .json({
-          message: e.message,
-          password: `Ваш пароль для входа: ${pass}`,
-        });
+      return res.status(500).json({
+        message: e.message,
+      });
     }
   }
 );
