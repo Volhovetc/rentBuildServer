@@ -27,3 +27,8 @@ async function start() {
 }
 
 start();
+
+app.get("/", (req, res) => {
+  res.send("API is running");
+  console.log("GET request to /");
+});
