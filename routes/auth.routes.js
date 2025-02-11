@@ -140,8 +140,8 @@ router.post(
         res.status(200).json({
           token: token,
           userID: candidate._doc._id,
-          message: "User logged in successfully",
-          status: 200,
+          value: true,
+          type: "data",
         });
       } else {
         res.status(500).json({ type: "error", value: "Не верный пароль" });
