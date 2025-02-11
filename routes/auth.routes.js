@@ -27,7 +27,7 @@ router.post(
       if (candidate && !repeat) {
         return res
           .status(400)
-          .json({ message: "Такой email уже зарегистрирован" });
+          .json({ type: "error", value: "Такой email уже зарегистрирован" });
       }
 
       if (candidate && repeat) {
@@ -36,8 +36,8 @@ router.post(
           { ...candidate._doc, hashedPassword: hashedPassword }
         );
         return res.status(200).json({
-          message: "Email sent successfully",
-          status: 200,
+          type: "data",
+          value: true,
           password: `Ваш пароль для входа: ${pass}`,
         });
       }
@@ -144,7 +144,7 @@ router.post(
           status: 200,
         });
       } else {
-        res.status(500).json({ error: "Не верный пароль" });
+        res.status(500).json({ type: "error", value: "Не верный пароль" });
       }
     } catch (e) {
       return res.status(500).json({ message: e.message });
