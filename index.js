@@ -11,24 +11,23 @@ app.use(cors());
 app.use("/api/auth", require("./routes/auth.routes"));
 
 async function start() {
-  // try {
-  //   await mongoose.connect(MONGOBD_URL, {
-  //     useNewUrlParser: true,
-  //     useUnifiedTopology: true,
-  //   });
-  app.listen(process.env.PORT, () => {
-    console.log(`Server running on port ${process.env.PORT}`);
-  });
-  //   console.log("Connected to MongoDB");
-  // } catch (e) {
-  //   console.error(e.message);
-  //   process.exit(1);
-  // }
+  try {
+    await mongoose.connect(MONGOBD_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    app.listen(process.env.PORT, () => {
+      console.log(`Server running on port ${process.env.PORT}`);
+    });
+    console.log("Connected to MongoDB");
+  } catch (e) {
+    console.error(e.message);
+    process.exit(1);
+  }
 }
 
 start();
 
 app.get("/", (req, res) => {
-  res.send("API is running");
-  console.log("GET request to /");
+  res.status(200).json("API is running");
 });
