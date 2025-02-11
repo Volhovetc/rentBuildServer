@@ -26,7 +26,7 @@ router.post(
       const candidate = await User.findOne({ email });
       if (candidate && !repeat) {
         return res
-          .status(400)
+          .status(200)
           .json({ type: "error", value: "Такой email уже зарегистрирован" });
       }
 
