@@ -49,26 +49,24 @@ router.post(
       });
 
       await user.save();
-      console.log(process.env.HOSTNAME, process.env.BOT, process.env.PASSWORD);
-      // const transporter = nodemailer.createTransport({
-      //   host: process.env.HOSTNAME,
-      //   port: 465,
-      //   secure: true,
-      //   auth: {
-      //     user: process.env.BOT,
-      //     pass: process.env.PASSWORD,
-      //   },
-      //   tls: {
-      //     rejectUnauthorized: false,
-      //   },
-
-      // });
-      // await transporter.sendMail({
-      //   from: process.env.BOT,
-      //   to: email,
-      //   subject: "Создание аккаунта",
-      //   text: `Ваш пароль для входа: ${pass}`,
-      // });
+      const transporter = nodemailer.createTransport({
+        host: process.env.HOSTNAME,
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.BOT,
+          pass: process.env.PASSWORD,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
+      await transporter.sendMail({
+        from: process.env.BOT,
+        to: email,
+        subject: "Создание аккаунта",
+        text: `Ваш пароль для входа: ${pass}`,
+      });
 
       return res.status(200).json({
         message: "Email sent successfully",
