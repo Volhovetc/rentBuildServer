@@ -11,13 +11,13 @@ const jwt = require("jsonwebtoken");
 // /api/auth
 router.post(
   "/signin",
-  [check("email", "Некорректный email").isEmail()],
+  // [check("email", "Некорректный email").isEmail()],
   async (req, res) => {
     try {
-      const error = validationResult(req);
-      if (!error.isEmpty()) {
-        return res.status(401).json({ errors: error.array() });
-      }
+      // const error = validationResult(req);
+      // if (!error.isEmpty()) {
+      //   return res.status(401).json({ errors: error.array() });
+      // }
 
       const pass = randomUUID();
       const hashedPassword = passwordHash.generate(pass);
@@ -119,14 +119,14 @@ router.post(
 
 router.post(
   "/login",
-  [check("email", "Некорректный email").isEmail()],
+  // [check("email", "Некорректный email").isEmail()],
   async (req, res) => {
     try {
       const { email, password } = req.body;
-      const error = validationResult(req);
-      if (!error.isEmpty()) {
-        return res.status(400).json({ errors: error.array() });
-      }
+      // const error = validationResult(req);
+      // if (!error.isEmpty()) {
+      //   return res.status(400).json({ errors: error.array() });
+      // }
       const candidate = await User.findOne({ email });
       if (
         candidate &&
