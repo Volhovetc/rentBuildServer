@@ -5,20 +5,20 @@
 .nitro
 .cache
 dist
-.env
+
 # Node dependencies
 node_modules
-.env
+
 
 # Logs
 logs
 *.log
-.env
+
 # Misc
 .DS_Store
 .fleet
 .idea
-.env
+
 # Local env files
 .env
 .env.*
