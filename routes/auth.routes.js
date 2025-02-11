@@ -38,7 +38,6 @@ router.post(
         return res.status(200).json({
           message: "Email sent successfully",
           status: 200,
-          email: email,
           password: `Ваш пароль для входа: ${pass}`,
         });
       }
@@ -69,9 +68,8 @@ router.post(
       // });
 
       return res.status(200).json({
-        message: "Email sent successfully",
-        status: 200,
-        email: email,
+        type: "data",
+        value: true,
         password: `Ваш пароль для входа: ${pass}`,
       });
     } catch (e) {
