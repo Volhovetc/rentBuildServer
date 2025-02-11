@@ -7,6 +7,7 @@ const router = Router();
 const { randomUUID } = require("crypto");
 const passwordHash = require("password-hash");
 const jwt = require("jsonwebtoken");
+
 // /api/auth
 router.post(
   "/signin",
@@ -17,16 +18,27 @@ router.post(
       if (!error.isEmpty()) {
         return res.status(400).json({ errors: error.array() });
       }
+      const pass = randomUUID();
+      const hashedPassword = passwordHash.generate(pass);
+      const { email, repeat } = req.body;
 
-      const { email } = req.body;
       const candidate = await User.findOne({ email });
-      if (candidate) {
+      if (candidate && !repeat) {
         return res
           .status(400)
           .json({ message: "Такой email уже зарегистрирован" });
       }
-      const pass = randomUUID();
-      const hashedPassword = passwordHash.generate(pass);
+
+      if (candidate && repeat) {
+        const update = { ...candidate, hashedPassword: hashedPassword };
+        await User.findOneAndUpdate(email, update);
+        return res.status(200).json({
+          message: "Email sent successfully",
+          status: 200,
+          email: email,
+          password: `Ваш пароль для входа: ${pass}`,
+        });
+      }
 
       const user = new User({
         email,
