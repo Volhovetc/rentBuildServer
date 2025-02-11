@@ -18,6 +18,7 @@ router.post(
       if (!error.isEmpty()) {
         return res.status(400).json({ errors: error.array() });
       }
+
       const pass = randomUUID();
       const hashedPassword = passwordHash.generate(pass);
       const { email, repeat } = req.body;
@@ -48,7 +49,7 @@ router.post(
       });
 
       await user.save();
-
+      console.log(process.env.HOSTNAME, process.env.BOT, process.env.PASSWORD);
       // const transporter = nodemailer.createTransport({
       //   host: process.env.HOSTNAME,
       //   port: 465,
