@@ -30,7 +30,7 @@ router.post(
       }
 
       if (candidate && repeat) {
-        const update = { ...candidate, hashedPassword: hashedPassword };
+        const update = { ...candidate._doc, hashedPassword: hashedPassword };
         await User.findOneAndUpdate({ email: email }, update);
         return res.status(200).json({
           message: "Email sent successfully",
