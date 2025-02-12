@@ -1,9 +1,9 @@
 require("dotenv").config();
 const { Router } = require("express");
+const router = Router();
 const Users = require("../models/Users");
 const { check, validationResult } = require("express-validator");
 const nodemailer = require("nodemailer");
-const router = Router();
 const passwordHash = require("password-hash");
 const jwt = require("jsonwebtoken");
 const generatePassword = require("password-generator");

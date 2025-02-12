@@ -1,8 +1,8 @@
 require("dotenv").config();
 const { Router } = require("express");
+const router = Router();
 const Users = require("../models/Users");
 const User = require("../models/User");
-const router = Router();
 const jwt = require("jsonwebtoken");
 
 // /api/base/
@@ -40,3 +40,5 @@ router.post("/data", async (req, res) => {
     return res.status(500).json({ message: e.message });
   }
 });
+
+module.exports = router;
