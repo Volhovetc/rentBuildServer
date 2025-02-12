@@ -59,7 +59,7 @@ router.post(
 );
 
 router.post(
-  "/sinin",
+  "/signin",
   [check("email", "Некорректный email").isEmail()],
   async (req, res) => {
     try {
