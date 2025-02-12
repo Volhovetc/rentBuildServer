@@ -24,5 +24,5 @@ const schema = new Schema({
     default: "user",
   },
 });
-
+console.log(model);
 module.exports = model("User", schema);

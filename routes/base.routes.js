@@ -23,21 +23,23 @@ router.post("/data", async (req, res) => {
         .status(401)
         .json({ type: "error", value: "Авторизация не пройдена" });
 
-    const UserInBase = await Users.findOne({ _id: decoded.userId });
-    if (!UserInBase)
+    const User = await Users.findOne({ _id: decoded.userId });
+    if (!User)
       return res
         .status(404)
         .json({ type: "error", value: "Пользователь не найден" });
 
     const { name, surname, lastname, role } = req.body;
-    const user = new User({
-      name,
-      surname,
-      lastname,
-      role,
-      id: decoded.userId,
-    });
-    await user.save();
+    await Users.findOneAndUpdate(
+      { _id: decoded.userId },
+      {
+        ...User._doc,
+        name: name,
+        surname: surname,
+        lastname: lastname,
+        role: role,
+      }
+    );
     res.status(200).json({ type: "success", value: "Данные сохранены" });
   } catch (e) {
     return res.status(500).json({ message: e.message });

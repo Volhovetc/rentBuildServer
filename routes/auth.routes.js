@@ -36,7 +36,7 @@ router.post(
         sendMail(email, pass);
         return res.status(200).json({
           type: "data",
-          value: true,
+          value: false,
         });
       }
       let date = new Date();

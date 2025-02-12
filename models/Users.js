@@ -19,6 +19,20 @@ const schema = new Schema({
   token: {
     type: String,
   },
+  name: {
+    type: String,
+  },
+  surname: {
+    type: String,
+  },
+  lastname: {
+    type: String,
+  },
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
 });
 
 module.exports = model("Users", schema);
