@@ -44,7 +44,9 @@ router.post(
         email,
         hashedPassword,
         isVerificated: false,
-        created_at: `${date.getDate()} - ${date.getMonth()} - ${date.getFullYear()}`,
+        created_at: `${date.getDate()} - ${
+          date.getMonth() + 1
+        } - ${date.getFullYear()}`,
       });
       await user.save();
       sendMail(email, pass);
@@ -87,8 +89,7 @@ router.post(
           );
         }
         res.status(200).json({
-          token: token,
-          value: true,
+          value: { token: token },
           type: "data",
         });
       } else {
