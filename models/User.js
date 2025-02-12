@@ -1,32 +1,27 @@
-const { Schema, model, Types } = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 const schema = new Schema({
-  email: {
+  id: {
     type: String,
     required: true,
     unique: true,
   },
-  hashedPassword: {
+  name: {
     type: String,
     required: true,
   },
-  isVerificated: {
-    type: Boolean,
-  },
-  // hashedMailPassword: {
-  //   type: String,
-  //   required: true,
-  // },
-  // name: {
-  //   type: String,
-  //   required: true,
-  // },
-  // surname: {
-  //   type: String,
-  //   required: true,
-  // },
-  token: {
+  surname: {
     type: String,
+    required: true,
+  },
+  lastname: {
+    type: String,
+    required: true,
+  },
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
   },
 });
 

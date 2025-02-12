@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { Router } = require("express");
-const User = require("../models/User");
+const Users = require("../models/Users");
 const { check, validationResult } = require("express-validator");
 const nodemailer = require("nodemailer");
 const router = Router();
@@ -21,7 +21,7 @@ router.post(
       const pass = customPassword();
       const hashedPassword = passwordHash.generate(pass);
       const { email } = req.body;
-      const candidate = await User.findOne({ email });
+      const candidate = await Users.findOne({ email });
       if (candidate && candidate._doc.isVerificated) {
         return res
           .status(400)
@@ -29,7 +29,7 @@ router.post(
       }
 
       if (candidate && !candidate._doc.isVerificated) {
-        await User.findOneAndUpdate(
+        await Users.findOneAndUpdate(
           { email: email },
           { ...candidate._doc, hashedPassword: hashedPassword }
         );
@@ -37,21 +37,20 @@ router.post(
         return res.status(200).json({
           type: "data",
           value: true,
-          password: pass,
         });
       }
-
-      const user = new User({
+      let date = new Date();
+      const user = new Users({
         email,
         hashedPassword,
         isVerificated: false,
+        created_at: `${date.getDate()} - ${date.getMonth()} - ${date.getFullYear()}`,
       });
       await user.save();
       sendMail(email, pass);
       return res.status(200).json({
         type: "data",
         value: true,
-        password: pass,
       });
     } catch (e) {
       return res.status(500).json({ message: e.message });
@@ -69,7 +68,7 @@ router.post(
       if (!error.isEmpty()) {
         return res.status(400).json({ errors: error.array() });
       }
-      const candidate = await User.findOne({ email });
+      const candidate = await Users.findOne({ email });
       if (
         candidate &&
         passwordHash.verify(password, candidate.hashedPassword)
@@ -78,18 +77,17 @@ router.post(
           { userId: candidate._doc._id },
           process.env.JWT_SECRET,
           {
-            expiresIn: "1h",
+            expiresIn: "7d",
           }
         );
         if (!candidate._doc.isVerificated) {
-          await User.findOneAndUpdate(
+          await Users.findOneAndUpdate(
             { email: email },
             { ...candidate._doc, isVerificated: true }
           );
         }
         res.status(200).json({
           token: token,
-          userID: candidate._doc._id,
           value: true,
           type: "data",
         });
@@ -105,62 +103,49 @@ router.post(
 module.exports = router;
 
 const sendMail = async (email, pass) => {
-  // const transporter = nodemailer.createTransport({
-  //   host: process.env.HOSTNAME,
-  //   port: 465,
-  //   secure: true,
-  //   auth: {
-  //     user: process.env.BOT,
-  //     pass: process.env.PASSWORD,
-  //   },
-  //   tls: {
-  //     rejectUnauthorized: false,
-  //   },
-  // });
-  // await transporter.sendMail({
-  //   from: process.env.BOT,
-  //   to: email,
-  //   subject: "Создание аккаунта",
-  //   text: `Ваш пароль для входа: ${pass}`,
-  // });
+  const transporter = nodemailer.createTransport({
+    host: process.env.HOSTNAME,
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.BOT,
+      pass: process.env.PASSWORD,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+  await transporter.sendMail({
+    from: process.env.BOT,
+    to: email,
+    subject: "Создание аккаунта",
+    text: `Ваш пароль для входа: ${pass}`,
+  });
 };
 
-const maxLength = 18;
-const minLength = 12;
-const uppercaseMinCount = 3;
-const lowercaseMinCount = 3;
-const numberMinCount = 2;
-const specialMinCount = 2;
-const UPPERCASE_RE = /([A-Z])/g;
-const LOWERCASE_RE = /([a-z])/g;
-const NUMBER_RE = /([\d])/g;
-const SPECIAL_CHAR_RE = /([\?\-])/g;
-const NON_REPEATING_CHAR_RE = /([\w\d\?\-])\1{2,}/g;
-
 function isStrongEnough(password) {
-  const uc = password.match(UPPERCASE_RE);
-  const lc = password.match(LOWERCASE_RE);
-  const n = password.match(NUMBER_RE);
-  const sc = password.match(SPECIAL_CHAR_RE);
-  const nr = password.match(NON_REPEATING_CHAR_RE);
+  const uc = password.match(/([A-Z])/g);
+  const lc = password.match(/([a-z])/g);
+  const n = password.match(/([\d])/g);
+  const sc = password.match(/([\?\-])/g);
+  const nr = password.match(/([\w\d\?\-])\1{2,}/g);
   return (
-    password.length >= minLength &&
+    password.length >= 12 &&
     !nr &&
     uc &&
-    uc.length >= uppercaseMinCount &&
+    uc.length >= 3 &&
     lc &&
-    lc.length >= lowercaseMinCount &&
+    lc.length >= 3 &&
     n &&
-    n.length >= numberMinCount &&
+    n.length >= 2 &&
     sc &&
-    sc.length >= specialMinCount
+    sc.length >= 2
   );
 }
 
 function customPassword() {
   let password = "";
-  const randomLength =
-    Math.floor(Math.random() * (maxLength - minLength)) + minLength;
+  const randomLength = Math.floor(Math.random() * (18 - 12)) + 12;
   while (!isStrongEnough(password)) {
     password = generatePassword(randomLength, false, /[\w\d\?\-]/);
   }
