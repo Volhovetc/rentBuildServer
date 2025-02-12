@@ -14,7 +14,7 @@ const schema = new Schema({
     type: Boolean,
   },
   created_at: {
-    type: Boolean,
+    type: String,
   },
   token: {
     type: String,
