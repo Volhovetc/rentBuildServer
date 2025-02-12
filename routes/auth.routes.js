@@ -10,7 +10,7 @@ const generatePassword = require("password-generator");
 
 // /api/auth
 router.post(
-  "/signin",
+  "/signup",
   [check("email", "Некорректный email").isEmail()],
   async (req, res) => {
     try {
@@ -59,7 +59,7 @@ router.post(
 );
 
 router.post(
-  "/login",
+  "/sinin",
   [check("email", "Некорректный email").isEmail()],
   async (req, res) => {
     try {
