@@ -10,6 +10,9 @@ const schema = new Schema({
     type: String,
     required: true,
   },
+  isVerificated: {
+    type: Boolean,
+  },
   // hashedMailPassword: {
   //   type: String,
   //   required: true,

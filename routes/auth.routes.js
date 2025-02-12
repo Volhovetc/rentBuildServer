@@ -22,14 +22,47 @@ router.post(
       const hashedPassword = passwordHash.generate(pass);
       const { email } = req.body;
       const candidate = await User.findOne({ email });
-      if (candidate) {
+      if (candidate && candidate._doc.isVerificated) {
+        ///пользователь верифицирован
         return res
           .status(400)
           .json({ type: "error", value: "Такой email уже зарегистрирован" });
       }
+
+      if (candidate && !candidate._doc.isVerificated) {
+        ///повтор пароля
+        await User.findOneAndUpdate(
+          { email: email },
+          { ...candidate._doc, hashedPassword: hashedPassword }
+        );
+        const transporter = nodemailer.createTransport({
+          host: process.env.HOSTNAME,
+          port: 465,
+          secure: true,
+          auth: {
+            user: process.env.BOT,
+            pass: process.env.PASSWORD,
+          },
+          tls: {
+            rejectUnauthorized: false,
+          },
+        });
+        await transporter.sendMail({
+          from: process.env.BOT,
+          to: email,
+          subject: "Создание аккаунта",
+          text: `Ваш пароль для входа: ${pass}`,
+        });
+        return res.status(200).json({
+          type: "data",
+          value: true,
+        });
+      }
+
       const user = new User({
         email,
         hashedPassword,
+        isVerificated: false,
       });
       await user.save();
       const transporter = nodemailer.createTransport({
@@ -53,55 +86,6 @@ router.post(
       return res.status(200).json({
         type: "data",
         value: true,
-      });
-    } catch (e) {
-      console.dir(e);
-      return res.status(500).json({ type: "erroe", value: e.message });
-    }
-  }
-);
-
-// /api/auth
-router.put(
-  "/signin",
-  // [check("email", "Некорректный email").isEmail()],
-  async (req, res) => {
-    try {
-      // const error = validationResult(req);
-      // if (!error.isEmpty()) {
-      //   return res.status(400).json({type: "error", value: error.array() });
-      // }
-      const pass = randomUUID();
-      const hashedPassword = passwordHash.generate(pass);
-      const { email } = req.body;
-      const candidate = await User.findOne({ email });
-      if (candidate) {
-        await User.findOneAndUpdate(
-          { email: email },
-          { ...candidate._doc, hashedPassword: hashedPassword }
-        );
-        return res.status(200).json({
-          type: "data",
-          value: true,
-        });
-      }
-      const transporter = nodemailer.createTransport({
-        host: process.env.HOSTNAME,
-        port: 465,
-        secure: true,
-        auth: {
-          user: process.env.BOT,
-          pass: process.env.PASSWORD,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-      });
-      await transporter.sendMail({
-        from: process.env.BOT,
-        to: email,
-        subject: "Создание аккаунта",
-        text: `Ваш пароль для входа: ${pass}`,
       });
     } catch (e) {
       return res.status(500).json({ message: e.message });
@@ -165,6 +149,12 @@ router.post(
             expiresIn: "1h",
           }
         );
+        if (!candidate._doc.isVerificated) {
+          await User.findOneAndUpdate(
+            { email: email },
+            { ...candidate._doc, isVerificated: true }
+          );
+        }
         res.status(200).json({
           token: token,
           userID: candidate._doc._id,
@@ -172,7 +162,7 @@ router.post(
           type: "data",
         });
       } else {
-        res.status(500).json({ type: "error", value: "Не верный пароль" });
+        res.status(500).json({ type: "error", value: "Неверные данные" });
       }
     } catch (e) {
       return res.status(500).json({ message: e.message });
