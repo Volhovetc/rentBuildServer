@@ -23,36 +23,17 @@ router.post(
       const { email } = req.body;
       const candidate = await User.findOne({ email });
       if (candidate && candidate._doc.isVerificated) {
-        ///пользователь верифицирован
         return res
           .status(400)
           .json({ type: "error", value: "Такой email уже зарегистрирован" });
       }
 
       if (candidate && !candidate._doc.isVerificated) {
-        ///повтор пароля
         await User.findOneAndUpdate(
           { email: email },
           { ...candidate._doc, hashedPassword: hashedPassword }
         );
-        const transporter = nodemailer.createTransport({
-          host: process.env.HOSTNAME,
-          port: 465,
-          secure: true,
-          auth: {
-            user: process.env.BOT,
-            pass: process.env.PASSWORD,
-          },
-          tls: {
-            rejectUnauthorized: false,
-          },
-        });
-        await transporter.sendMail({
-          from: process.env.BOT,
-          to: email,
-          subject: "Создание аккаунта",
-          text: `Ваш пароль для входа: ${pass}`,
-        });
+        sendMail(email, pass);
         return res.status(200).json({
           type: "data",
           value: true,
@@ -65,24 +46,7 @@ router.post(
         isVerificated: false,
       });
       await user.save();
-      const transporter = nodemailer.createTransport({
-        host: process.env.HOSTNAME,
-        port: 465,
-        secure: true,
-        auth: {
-          user: process.env.BOT,
-          pass: process.env.PASSWORD,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-      });
-      await transporter.sendMail({
-        from: process.env.BOT,
-        to: email,
-        subject: "Создание аккаунта",
-        text: `Ваш пароль для входа: ${pass}`,
-      });
+      sendMail(email, pass);
       return res.status(200).json({
         type: "data",
         value: true,
@@ -171,3 +135,24 @@ router.post(
 );
 
 module.exports = router;
+
+const sendMail = async (email, pass) => {
+  const transporter = nodemailer.createTransport({
+    host: process.env.HOSTNAME,
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.BOT,
+      pass: process.env.PASSWORD,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+  await transporter.sendMail({
+    from: process.env.BOT,
+    to: email,
+    subject: "Создание аккаунта",
+    text: `Ваш пароль для входа: ${pass}`,
+  });
+};
