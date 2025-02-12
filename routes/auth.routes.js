@@ -63,7 +63,7 @@ router.post(
 
 // /api/auth
 router.put(
-  "/resignin",
+  "/signin",
   // [check("email", "Некорректный email").isEmail()],
   async (req, res) => {
     try {
