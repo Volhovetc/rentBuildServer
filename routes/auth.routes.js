@@ -6,6 +6,7 @@ const nodemailer = require("nodemailer");
 const router = Router();
 const passwordHash = require("password-hash");
 const jwt = require("jsonwebtoken");
+const generatePassword = require("password-generator");
 
 // /api/auth
 router.post(
