@@ -13,6 +13,9 @@ const schema = new Schema({
   isVerificated: {
     type: Boolean,
   },
+  isBrief: {
+    type: Boolean,
+  },
   created_at: {
     type: String,
   },

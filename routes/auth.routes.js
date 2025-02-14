@@ -89,7 +89,7 @@ router.post(
           );
         }
         res.status(200).json({
-          value: { token: token },
+          value: { token: token, isBrief: candidate.isBrief },
           type: "data",
         });
       } else {
